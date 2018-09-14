@@ -1,6 +1,6 @@
 # MySQL Storage for [OAuth 2.0](https://github.com/go-oauth2/oauth2)
 
-[![ReportCard][reportcard-image]][reportcard-url] [![GoDoc][godoc-image]][godoc-url] [![License][license-image]][license-url]
+[![Build][Build-Status-Image]][Build-Status-Url] [![Codecov][codecov-image]][codecov-url] [![ReportCard][reportcard-image]][reportcard-url] [![GoDoc][godoc-image]][godoc-url] [![License][license-image]][license-url]
 
 ## Install
 
@@ -37,6 +37,10 @@ func main() {
 Copyright (c) 2018 Lyric
 ```
 
+[Build-Status-Url]: https://travis-ci.org/go-oauth2/mysql
+[Build-Status-Image]: https://travis-ci.org/go-oauth2/mysql.svg?branch=master
+[codecov-url]: https://codecov.io/gh/go-oauth2/mysql
+[codecov-image]: https://codecov.io/gh/go-oauth2/mysql/branch/master/graph/badge.svg
 [reportcard-url]: https://goreportcard.com/report/gopkg.in/go-oauth2/mysql.v3
 [reportcard-image]: https://goreportcard.com/badge/gopkg.in/go-oauth2/mysql.v3
 [godoc-url]: https://godoc.org/gopkg.in/go-oauth2/mysql.v3
