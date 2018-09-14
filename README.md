@@ -15,9 +15,9 @@ package main
 
 import (
 	"gopkg.in/go-oauth2/mysql.v3"
-    "gopkg.in/oauth2.v3/manage"
-    
-    _ "github.com/go-sql-driver/mysql"
+	"gopkg.in/oauth2.v3/manage"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -25,10 +25,11 @@ func main() {
 
 	// use mysql token store
 	manager.MapTokenStorage(
-		mysql.NewStore(mysql.NewConfig("root:123456@tcp(127.0.0.1:3306)/myapp_test?charset=utf8") , "", 0),
+		mysql.NewStore(mysql.NewConfig("root:123456@tcp(127.0.0.1:3306)/myapp_test?charset=utf8"), "", 0),
 	)
 	// ...
 }
+
 ```
 
 ## MIT License

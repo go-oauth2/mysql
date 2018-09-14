@@ -2,7 +2,7 @@ language: go
 sudo: false
 go_import_path: gopkg.in/go-oauth2/mysql.v3
 go:
-  - 1.7
+  - 1.9
 services:
   - mysql
 before_install:
