@@ -61,15 +61,16 @@ func NewStoreWithDB(db *sql.DB, tableName string, gcInterval int) *Store {
 		db:        &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{Encoding: "UTF8", Engine: "MyISAM"}},
 		tableName: "oauth2_token",
 		stdout:    os.Stderr,
-		interval:  600,
 	}
 	if tableName != "" {
 		store.tableName = tableName
 	}
 
+	interval := 600
 	if gcInterval > 0 {
-		store.interval = gcInterval
+		interval = gcInterval
 	}
+	store.ticker = time.NewTicker(time.Second * time.Duration(interval))
 
 	table := store.db.AddTableWithName(StoreItem{}, store.tableName)
 	table.AddIndex("idx_code", "Btree", []string{"code"})
@@ -89,10 +90,10 @@ func NewStoreWithDB(db *sql.DB, tableName string, gcInterval int) *Store {
 
 // Store mysql token store
 type Store struct {
-	interval  int
 	tableName string
 	db        *gorp.DbMap
 	stdout    io.Writer
+	ticker    *time.Ticker
 }
 
 // SetStdout set error output
@@ -103,6 +104,7 @@ func (s *Store) SetStdout(stdout io.Writer) *Store {
 
 // Close close the store
 func (s *Store) Close() {
+	s.ticker.Stop()
 	s.db.Db.Close()
 }
 
@@ -114,8 +116,7 @@ func (s *Store) errorf(format string, args ...interface{}) {
 }
 
 func (s *Store) gc() {
-	ticker := time.NewTicker(time.Second * time.Duration(s.interval))
-	for range ticker.C {
+	for range s.ticker.C {
 		now := time.Now().Unix()
 		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE expired_at<=?", s.tableName)
 		n, err := s.db.SelectInt(query, now)
