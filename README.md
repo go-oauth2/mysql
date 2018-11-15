@@ -25,7 +25,7 @@ func main() {
 
 	// use mysql token store
 	store := mysql.NewStore(
-		mysql.NewConfig("root:123456@tcp(127.0.0.1:3306)/myapp_test?charset=utf8"), "", 0),
+		mysql.NewConfig("root:123456@tcp(127.0.0.1:3306)/myapp_test?charset=utf8"),
 		"",
 		0,
 	)
