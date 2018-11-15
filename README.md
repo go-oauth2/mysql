@@ -24,9 +24,15 @@ func main() {
 	manager := manage.NewDefaultManager()
 
 	// use mysql token store
-	manager.MapTokenStorage(
-		mysql.NewStore(mysql.NewConfig("root:123456@tcp(127.0.0.1:3306)/myapp_test?charset=utf8"), "", 0),
+	store := mysql.NewStore(
+		mysql.NewConfig("root:123456@tcp(127.0.0.1:3306)/myapp_test?charset=utf8"), "", 0),
+		"",
+		0,
 	)
+
+	defer store.Close()
+
+	manager.MapTokenStorage(store)
 	// ...
 }
 

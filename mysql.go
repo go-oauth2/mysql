@@ -42,6 +42,9 @@ type Config struct {
 }
 
 // NewStore create mysql store instance,
+// config mysql configuration,
+// tableName table name (default oauth2_token),
+// GC time interval (in seconds, default 600)
 func NewStore(config *Config, tableName string, gcInterval int) *Store {
 	db, err := sql.Open("mysql", config.DSN)
 	if err != nil {
@@ -55,7 +58,10 @@ func NewStore(config *Config, tableName string, gcInterval int) *Store {
 	return NewStoreWithDB(db, tableName, gcInterval)
 }
 
-// NewStoreWithDB create mysql store instance
+// NewStoreWithDB create mysql store instance,
+// db sql.DB,
+// tableName table name (default oauth2_token),
+// GC time interval (in seconds, default 600)
 func NewStoreWithDB(db *sql.DB, tableName string, gcInterval int) *Store {
 	store := &Store{
 		db:        &gorp.DbMap{Db: db, Dialect: gorp.MySQLDialect{Encoding: "UTF8", Engine: "MyISAM"}},
