@@ -6,9 +6,8 @@ import (
 
 	"gopkg.in/oauth2.v3/models"
 
-	. "github.com/smartystreets/goconvey/convey"
-
 	_ "github.com/go-sql-driver/mysql"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 const (
@@ -16,11 +15,9 @@ const (
 )
 
 func TestTokenStore(t *testing.T) {
-	// wait gc
-	defer time.Sleep(time.Second * 2)
-
 	Convey("Test mysql token store", t, func() {
-		store := NewStore(NewConfig(dsn), "", 1)
+		store := NewDefaultStore(NewConfig(dsn))
+		defer store.clean()
 
 		Convey("Test authorization code store", func() {
 			info := &models.Token{

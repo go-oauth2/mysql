@@ -24,10 +24,8 @@ func main() {
 	manager := manage.NewDefaultManager()
 
 	// use mysql token store
-	store := mysql.NewStore(
+	store := mysql.NewDefaultStore(
 		mysql.NewConfig("root:123456@tcp(127.0.0.1:3306)/myapp_test?charset=utf8"),
-		"",
-		0,
 	)
 
 	defer store.Close()

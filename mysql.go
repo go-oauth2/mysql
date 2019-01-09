@@ -41,6 +41,11 @@ type Config struct {
 	MaxIdleConns int
 }
 
+// NewDefaultStore create mysql store instance
+func NewDefaultStore(config *Config) *Store {
+	return NewStore(config, "", 0)
+}
+
 // NewStore create mysql store instance,
 // config mysql configuration,
 // tableName table name (default oauth2_token),
@@ -114,27 +119,33 @@ func (s *Store) Close() {
 	s.db.Db.Close()
 }
 
-func (s *Store) errorf(format string, args ...interface{}) {
-	if s.stdout != nil {
-		buf := fmt.Sprintf(format, args...)
-		s.stdout.Write([]byte(buf))
+func (s *Store) gc() {
+	for range s.ticker.C {
+		s.clean()
 	}
 }
 
-func (s *Store) gc() {
-	for range s.ticker.C {
-		now := time.Now().Unix()
-		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE expired_at<=?", s.tableName)
-		n, err := s.db.SelectInt(query, now)
+func (s *Store) clean() {
+	now := time.Now().Unix()
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE expired_at<=? OR (code='' AND access='' AND refresh='')", s.tableName)
+	n, err := s.db.SelectInt(query, now)
+	if err != nil || n == 0 {
 		if err != nil {
-			s.errorf("[ERROR]:%s", err.Error())
-			return
-		} else if n > 0 {
-			_, err = s.db.Exec(fmt.Sprintf("DELETE FROM %s WHERE expired_at<=?", s.tableName), now)
-			if err != nil {
-				s.errorf("[ERROR]:%s", err.Error())
-			}
+			s.errorf(err.Error())
 		}
+		return
+	}
+
+	_, err = s.db.Exec(fmt.Sprintf("DELETE FROM %s WHERE expired_at<=? OR (code='' AND access='' AND refresh='')", s.tableName), now)
+	if err != nil {
+		s.errorf(err.Error())
+	}
+}
+
+func (s *Store) errorf(format string, args ...interface{}) {
+	if s.stdout != nil {
+		buf := fmt.Sprintf("[OAUTH2-MYSQL-ERROR]: "+format, args...)
+		s.stdout.Write([]byte(buf))
 	}
 }
 
