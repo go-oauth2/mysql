@@ -17,9 +17,9 @@ import (
 type StoreItem struct {
 	ID        int64  `db:"id,primarykey,autoincrement"`
 	ExpiredAt int64  `db:"expired_at"`
-	Code      string `db:"code,size:512"`
-	Access    string `db:"access,size:512"`
-	Refresh   string `db:"refresh,size:512"`
+	Code      string `db:"code,size:255"`
+	Access    string `db:"access,size:255"`
+	Refresh   string `db:"refresh,size:255"`
 	Data      string `db:"data,size:2048"`
 }
 
