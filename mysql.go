@@ -7,10 +7,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-oauth2/oauth2/v4"
+	"github.com/go-oauth2/oauth2/v4/models"
 	"github.com/json-iterator/go"
 	"gopkg.in/gorp.v2"
-	"gopkg.in/oauth2.v3"
-	"gopkg.in/oauth2.v3/models"
 )
 
 // StoreItem data item
