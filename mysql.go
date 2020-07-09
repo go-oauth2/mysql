@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"io"
@@ -150,7 +151,7 @@ func (s *Store) errorf(format string, args ...interface{}) {
 }
 
 // Create create and store the new token information
-func (s *Store) Create(info oauth2.TokenInfo) error {
+func (s *Store) Create(ctx context.Context, info oauth2.TokenInfo) error {
 	buf, _ := jsoniter.Marshal(info)
 	item := &StoreItem{
 		Data: string(buf),
@@ -173,7 +174,7 @@ func (s *Store) Create(info oauth2.TokenInfo) error {
 }
 
 // RemoveByCode delete the authorization code
-func (s *Store) RemoveByCode(code string) error {
+func (s *Store) RemoveByCode(ctx context.Context, code string) error {
 	query := fmt.Sprintf("UPDATE %s SET code='' WHERE code=? LIMIT 1", s.tableName)
 	_, err := s.db.Exec(query, code)
 	if err != nil && err == sql.ErrNoRows {
@@ -183,7 +184,7 @@ func (s *Store) RemoveByCode(code string) error {
 }
 
 // RemoveByAccess use the access token to delete the token information
-func (s *Store) RemoveByAccess(access string) error {
+func (s *Store) RemoveByAccess(ctx context.Context, access string) error {
 	query := fmt.Sprintf("UPDATE %s SET access='' WHERE access=? LIMIT 1", s.tableName)
 	_, err := s.db.Exec(query, access)
 	if err != nil && err == sql.ErrNoRows {
@@ -193,7 +194,7 @@ func (s *Store) RemoveByAccess(access string) error {
 }
 
 // RemoveByRefresh use the refresh token to delete the token information
-func (s *Store) RemoveByRefresh(refresh string) error {
+func (s *Store) RemoveByRefresh(ctx context.Context, refresh string) error {
 	query := fmt.Sprintf("UPDATE %s SET refresh='' WHERE refresh=? LIMIT 1", s.tableName)
 	_, err := s.db.Exec(query, refresh)
 	if err != nil && err == sql.ErrNoRows {
@@ -209,7 +210,7 @@ func (s *Store) toTokenInfo(data string) oauth2.TokenInfo {
 }
 
 // GetByCode use the authorization code for token information data
-func (s *Store) GetByCode(code string) (oauth2.TokenInfo, error) {
+func (s *Store) GetByCode(ctx context.Context, code string) (oauth2.TokenInfo, error) {
 	if code == "" {
 		return nil, nil
 	}
@@ -227,7 +228,7 @@ func (s *Store) GetByCode(code string) (oauth2.TokenInfo, error) {
 }
 
 // GetByAccess use the access token for token information data
-func (s *Store) GetByAccess(access string) (oauth2.TokenInfo, error) {
+func (s *Store) GetByAccess(ctx context.Context, access string) (oauth2.TokenInfo, error) {
 	if access == "" {
 		return nil, nil
 	}
@@ -245,7 +246,7 @@ func (s *Store) GetByAccess(access string) (oauth2.TokenInfo, error) {
 }
 
 // GetByRefresh use the refresh token for token information data
-func (s *Store) GetByRefresh(refresh string) (oauth2.TokenInfo, error) {
+func (s *Store) GetByRefresh(ctx context.Context, refresh string) (oauth2.TokenInfo, error) {
 	if refresh == "" {
 		return nil, nil
 	}
