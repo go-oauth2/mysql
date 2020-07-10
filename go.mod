@@ -1,4 +1,4 @@
-module github.com/go-oauth2/mysql
+module github.com/go-oauth2/mysql/v4
 
 go 1.14
 

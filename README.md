@@ -5,7 +5,7 @@
 ## Install
 
 ``` bash
-$ go get -u -v gopkg.in/go-oauth2/mysql.v3
+$ go get -v github.com/go-oauth2/mysql/v4
 ```
 
 ## Usage
@@ -14,8 +14,8 @@ $ go get -u -v gopkg.in/go-oauth2/mysql.v3
 package main
 
 import (
-	"gopkg.in/go-oauth2/mysql.v3"
-	"gopkg.in/oauth2.v3/manage"
+	"github.com/go-oauth2/mysql/v4"
+	"github.com/go-oauth2/oauth2/v4/manage"
 
 	_ "github.com/go-sql-driver/mysql"
 )
