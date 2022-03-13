@@ -2,12 +2,16 @@ package mysql
 
 import (
 	"context"
-	"github.com/go-oauth2/oauth2/v4/models"
+	"regexp"
 	"testing"
 	"time"
 
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/go-oauth2/oauth2/v4/models"
 	_ "github.com/go-sql-driver/mysql"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/gorp.v2"
 )
 
 const (
@@ -110,4 +114,32 @@ func TestTokenStore(t *testing.T) {
 			So(rinfo, ShouldBeNil)
 		})
 	})
+}
+
+func TestNewStoreWithOpts_ShouldReturnStoreNotNil(t *testing.T) {
+	// ARRANGE
+	db, mockDB, _ := sqlmock.New()
+	tableName := "custom_table_name"
+
+	// Mock sql exec create table
+	mockDB.ExpectExec(regexp.QuoteMeta("create table if not exists `custom_table_name` (`id` bigint not null primary key auto_increment, `expired_at` bigint, `code` varchar(255), `access` varchar(255), `refresh` varchar(255), `data` text) engine=InnoDB charset=UTF8;")).
+		WillReturnResult(sqlmock.NewResult(0, 0))
+
+	// Mock query:
+	mockDB.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(*) FROM custom_table_name WHERE expired_at<=? OR (code='' AND access='' AND refresh='')")).
+		WillReturnRows(sqlmock.NewRows([]string{"count(*)"}).AddRow(0))
+
+	// ACTION
+	store := NewStoreWithOpts(db,
+		WithTableName(tableName),
+		WithSQLDialect(gorp.MySQLDialect{Engine: "InnoDB", Encoding: "UTF8"}),
+		WithGCTimeInterval(1000),
+	)
+
+	defer store.clean()
+
+	// ASSERT
+	assert.NotNil(t, store)
+	assert.NotNil(t, store.ticker)
+	assert.Equal(t, store.tableName, tableName)
 }
